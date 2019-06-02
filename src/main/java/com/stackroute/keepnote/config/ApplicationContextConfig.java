@@ -1,5 +1,24 @@
 package com.stackroute.keepnote.config;
 
+import java.util.Properties;
+
+import javax.sql.DataSource;
+
+import org.apache.commons.dbcp.BasicDataSource;
+import org.hibernate.SessionFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+
+import com.stackroute.keepnote.model.Category;
+import com.stackroute.keepnote.model.Note;
+import com.stackroute.keepnote.model.Reminder;
+import com.stackroute.keepnote.model.User;
+
 /*This class will contain the application-context for the application. 
  * Define the following annotations:
  * @Configuration - Annotating a class with the @Configuration indicates that the 
@@ -12,7 +31,10 @@ package com.stackroute.keepnote.config;
  *                  
  * 
  * */
-
+@Configuration
+@ComponentScan(basePackages = { "com.stackroute.keepnote" })
+@EnableWebMvc
+@EnableTransactionManagement
 public class ApplicationContextConfig {
 
 	/*
@@ -23,23 +45,48 @@ public class ApplicationContextConfig {
 
 	/*
 	 * Use this configuration while submitting solution in hobbes.
-	 * dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+	 * dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver")
 	 * dataSource.setUrl("jdbc:mysql://" + System.getenv("MYSQL_HOST") + ":3306/" +
 	 * System.getenv("MYSQL_DATABASE")
-	 * +"?verifyServerCertificate=false&useSSL=false&requireSSL=false");
-	 * dataSource.setUsername(System.getenv("MYSQL_USER"));
-	 * dataSource.setPassword(System.getenv("MYSQL_PASSWORD"));
+	 * +"?verifyServerCertificate=false&useSSL=false&requireSSL=false")
+	 * dataSource.setUsername(System.getenv("MYSQL_USER"))
+	 * dataSource.setPassword(System.getenv("MYSQL_PASSWORD"))
 	 */
+	@Bean
+	public DataSource dataSource() {
+		BasicDataSource ds = new BasicDataSource();
+		ds.setDriverClassName("com.mysql.cj.jdbc.Driver");
+		ds.setUrl("jdbc:mysql://localhost:3306/keepnoteapp?verifyServerCertificate=false&useSSL=false&requireSSL=false");
+		ds.setUsername("root");
+		ds.setPassword("root");
+		return ds;
+	}
 
 	/*
 	 * create a getter for Hibernate properties here we have to mention 1. show_sql
 	 * 2. Dialect 3. hbm2ddl
 	 */
+	@Bean
+	public Properties hibernateProperties() {
+		Properties hbProp = new Properties();
+		hbProp.put("hibernate.show_sql", "true");
+		hbProp.put("hibernate.hbm2ddl.auto", "update");
+		hbProp.put("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
+		return hbProp;
+	}
 
 	/*
 	 * Define the bean for SessionFactory. Hibernate SessionFactory is the factory
 	 * class through which we get sessions and perform database operations.
 	 */
+	@Bean
+	public LocalSessionFactoryBean sessionFactory(DataSource dataSource, Properties hibernateProperties) {
+		LocalSessionFactoryBean bean = new LocalSessionFactoryBean();
+		bean.setDataSource(dataSource);
+		bean.setHibernateProperties(hibernateProperties);
+		bean.setAnnotatedClasses(Category.class, Note.class, Reminder.class, User.class);
+		return bean;
+	}
 
 	/*
 	 * Define the bean for Transaction Manager. HibernateTransactionManager handles
@@ -49,5 +96,9 @@ public class ApplicationContextConfig {
 	 * JDBC too. HibernateTransactionManager allows bulk update and bulk insert and
 	 * ensures data integrity.
 	 */
+	@Bean
+	public HibernateTransactionManager transactionManager(SessionFactory sessionFactory) {
+		return new HibernateTransactionManager(sessionFactory);
+	}
 
 }

@@ -1,7 +1,14 @@
 package com.stackroute.keepnote.dao;
 
 import java.util.List;
+
+import javax.transaction.Transactional;
+
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import com.stackroute.keepnote.exception.ReminderNotFoundException;
 import com.stackroute.keepnote.model.Reminder;
 
@@ -14,16 +21,20 @@ import com.stackroute.keepnote.model.Reminder;
  * 					transaction. The database transaction happens inside the scope of a persistence 
  * 					context.  
  * */
-
+@Repository
+@Transactional
 public class ReminderDAOImpl implements ReminderDAO {
-	
+
 	/*
 	 * Autowiring should be implemented for the SessionFactory.(Use
 	 * constructor-based autowiring.
 	 */
 
-	public ReminderDAOImpl(SessionFactory sessionFactory) {
+	private final SessionFactory sessionFactory;
 
+	@Autowired
+	public ReminderDAOImpl(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
 	}
 
 	/*
@@ -31,10 +42,13 @@ public class ReminderDAOImpl implements ReminderDAO {
 	 */
 
 	public boolean createReminder(Reminder reminder) {
+		Session session = this.sessionFactory.getCurrentSession();
+		session.save(reminder);
+		session.flush();		
 		return false;
 
 	}
-	
+
 	/*
 	 * Update an existing reminder
 	 */
@@ -47,8 +61,15 @@ public class ReminderDAOImpl implements ReminderDAO {
 	/*
 	 * Remove an existing reminder
 	 */
-	
+
 	public boolean deleteReminder(int reminderId) {
+		Session session=this.sessionFactory.getCurrentSession();
+		try {
+			session.delete(this.getReminderById(reminderId));
+		} catch (ReminderNotFoundException e) {
+			
+			e.printStackTrace();
+		}
 		return false;
 
 	}
@@ -56,16 +77,23 @@ public class ReminderDAOImpl implements ReminderDAO {
 	/*
 	 * Retrieve details of a specific reminder
 	 */
-	
+
 	public Reminder getReminderById(int reminderId) throws ReminderNotFoundException {
-		return null;
+		Session session=this.sessionFactory.getCurrentSession();
+		Reminder reminder = session.get(Reminder.class, reminderId);
+		session.flush();
+		if (null == reminder) {
+			throw new ReminderNotFoundException("Reminder with specified id is not found");
+		}
+		
+		return reminder;
 
 	}
 
 	/*
 	 * Retrieve details of all reminders by userId
 	 */
-	
+
 	public List<Reminder> getAllReminderByUserId(String userId) {
 		return null;
 

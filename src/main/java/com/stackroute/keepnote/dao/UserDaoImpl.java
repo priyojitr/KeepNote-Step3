@@ -1,6 +1,12 @@
 package com.stackroute.keepnote.dao;
 
+import javax.transaction.Transactional;
+
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import com.stackroute.keepnote.exception.UserNotFoundException;
 import com.stackroute.keepnote.model.User;
 
@@ -13,6 +19,9 @@ import com.stackroute.keepnote.model.User;
  * 					transaction. The database transaction happens inside the scope of a persistence 
  * 					context.  
  * */
+
+@Repository
+@Transactional
 public class UserDaoImpl implements UserDAO {
 
 	/*
@@ -20,8 +29,11 @@ public class UserDaoImpl implements UserDAO {
 	 * constructor-based autowiring.
 	 */
 
-	public UserDaoImpl(SessionFactory sessionFactory) {
+	private final SessionFactory sessionFactory;
 
+	@Autowired
+	public UserDaoImpl(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
 	}
 
 	/*
@@ -29,8 +41,18 @@ public class UserDaoImpl implements UserDAO {
 	 */
 
 	public boolean registerUser(User user) {
-
-		return false;
+		if (null == this.getUserById(user.getUserId())) {
+			return Boolean.FALSE;
+		}else {
+			if(user.getUserId().equals(this.getUserById(user.getUserId()).getUserId())) {
+				// duplicate user
+				return Boolean.FALSE;
+			}
+		}
+		Session session = this.sessionFactory.getCurrentSession();
+		session.save(user);
+		session.flush();
+		return Boolean.TRUE;
 	}
 
 	/*
@@ -38,8 +60,14 @@ public class UserDaoImpl implements UserDAO {
 	 */
 
 	public boolean updateUser(User user) {
-
-		return false;
+		if (null == this.getUserById(user.getUserId())) {
+			return Boolean.FALSE;
+		}
+		Session session = this.sessionFactory.getCurrentSession();
+		session.clear();
+		session.update(user);
+		session.flush();
+		return Boolean.TRUE;
 
 	}
 
@@ -47,8 +75,10 @@ public class UserDaoImpl implements UserDAO {
 	 * Retrieve details of a specific user
 	 */
 	public User getUserById(String UserId) {
-
-		return null;
+		Session session = this.sessionFactory.getCurrentSession();
+		User user = session.get(User.class, UserId);
+		session.flush();
+		return user;
 	}
 
 	/*
@@ -56,7 +86,15 @@ public class UserDaoImpl implements UserDAO {
 	 */
 
 	public boolean validateUser(String userId, String password) throws UserNotFoundException {
-		return false;
+		User user = this.getUserById(userId);
+		if (null == user) {
+			throw new UserNotFoundException("User id provided do not exists.");
+		} else {
+			if (!password.equals(user.getUserPassword())) {
+				return Boolean.FALSE;
+			}
+		}
+		return Boolean.TRUE;
 
 	}
 
@@ -64,7 +102,16 @@ public class UserDaoImpl implements UserDAO {
 	 * Remove an existing user
 	 */
 	public boolean deleteUser(String userId) {
-		return false;
+		User user = this.getUserById(userId);
+		if (null == user) {
+			return Boolean.FALSE;
+		}
+	
+		Session session = this.sessionFactory.getCurrentSession();
+		session.delete(user);
+		session.flush();
+
+		return Boolean.TRUE;
 
 	}
 
