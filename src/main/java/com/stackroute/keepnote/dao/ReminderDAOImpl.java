@@ -6,6 +6,7 @@ import javax.transaction.Transactional;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -44,7 +45,7 @@ public class ReminderDAOImpl implements ReminderDAO {
 	public boolean createReminder(Reminder reminder) {
 		Session session = this.sessionFactory.getCurrentSession();
 		session.save(reminder);
-		session.flush();		
+		session.flush();
 		return false;
 
 	}
@@ -54,8 +55,19 @@ public class ReminderDAOImpl implements ReminderDAO {
 	 */
 
 	public boolean updateReminder(Reminder reminder) {
-		return false;
-
+		boolean flag = Boolean.TRUE;
+		Session session = this.sessionFactory.getCurrentSession();
+		try {
+			// check whether reminder id exists or else exception will be thrown
+			this.getReminderById(reminder.getReminderId());
+			session.clear();
+			session.update(reminder);
+			session.flush();
+		} catch (ReminderNotFoundException ex) {
+			flag = Boolean.FALSE;
+			ex.printStackTrace();
+		}
+		return flag;
 	}
 
 	/*
@@ -63,15 +75,17 @@ public class ReminderDAOImpl implements ReminderDAO {
 	 */
 
 	public boolean deleteReminder(int reminderId) {
-		Session session=this.sessionFactory.getCurrentSession();
+		boolean flag = Boolean.TRUE;
+		Session session = this.sessionFactory.getCurrentSession();
 		try {
 			session.delete(this.getReminderById(reminderId));
-		} catch (ReminderNotFoundException e) {
-			
-			e.printStackTrace();
+			session.flush();
+		} catch (ReminderNotFoundException ex) {
+			flag = Boolean.FALSE;
+			System.out.println(ex.getMessage());
+			ex.printStackTrace();
 		}
-		return false;
-
+		return flag;
 	}
 
 	/*
@@ -79,15 +93,13 @@ public class ReminderDAOImpl implements ReminderDAO {
 	 */
 
 	public Reminder getReminderById(int reminderId) throws ReminderNotFoundException {
-		Session session=this.sessionFactory.getCurrentSession();
+		Session session = this.sessionFactory.getCurrentSession();
 		Reminder reminder = session.get(Reminder.class, reminderId);
 		session.flush();
 		if (null == reminder) {
 			throw new ReminderNotFoundException("Reminder with specified id is not found");
 		}
-		
 		return reminder;
-
 	}
 
 	/*
@@ -95,8 +107,10 @@ public class ReminderDAOImpl implements ReminderDAO {
 	 */
 
 	public List<Reminder> getAllReminderByUserId(String userId) {
-		return null;
-
+		Session session = this.sessionFactory.getCurrentSession();
+		String hql = "FROM Reminder reminder where reminderCreatedBy = :userId";
+		Query<Reminder> qry = session.createQuery(hql).setParameter("userId", userId);
+		return qry.getResultList();
 	}
 
 }

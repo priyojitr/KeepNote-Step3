@@ -7,6 +7,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.stackroute.keepnote.exception.UserAlreadyExistException;
 import com.stackroute.keepnote.exception.UserNotFoundException;
 import com.stackroute.keepnote.model.User;
 
@@ -41,17 +42,22 @@ public class UserDaoImpl implements UserDAO {
 	 */
 
 	public boolean registerUser(User user) {
+		try {
 		if (null == this.getUserById(user.getUserId())) {
 			return Boolean.FALSE;
 		}else {
 			if(user.getUserId().equals(this.getUserById(user.getUserId()).getUserId())) {
 				// duplicate user
-				return Boolean.FALSE;
+				throw new UserAlreadyExistException("user id already exists.");
 			}
 		}
 		Session session = this.sessionFactory.getCurrentSession();
 		session.save(user);
 		session.flush();
+		}catch(Exception ex) {
+			ex.printStackTrace();
+			System.out.println(ex.getMessage());
+		}
 		return Boolean.TRUE;
 	}
 
