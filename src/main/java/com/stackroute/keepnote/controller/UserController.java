@@ -1,5 +1,19 @@
 package com.stackroute.keepnote.controller;
 
+import javax.servlet.http.HttpSession;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.stackroute.keepnote.exception.UserAlreadyExistException;
+import com.stackroute.keepnote.model.User;
 import com.stackroute.keepnote.service.UserService;
 
 /*
@@ -10,16 +24,20 @@ import com.stackroute.keepnote.service.UserService;
  * format. Starting from Spring 4 and above, we can use @RestController annotation which 
  * is equivalent to using @Controller and @ResposeBody annotation
  */
-
+@RestController
 public class UserController {
 
+	private static final String SESSION_ATTR = "loggedInUserId";
 	/*
 	 * Autowiring should be implemented for the UserService. (Use Constructor-based
 	 * autowiring) Please note that we should not create an object using the new
 	 * keyword
 	 */
 
+	private final UserService userService;
+
 	public UserController(UserService userService) {
+		this.userService = userService;
 	}
 
 	/*
@@ -37,6 +55,18 @@ public class UserController {
 	 * This handler method should map to the URL "/user/register" using HTTP POST
 	 * method
 	 */
+	@PostMapping("/user/register")
+	public ResponseEntity<Object> userRegister(@RequestBody User user) {
+		ResponseEntity<Object> response = null;
+		try {
+			this.userService.registerUser(user);
+		} catch (UserAlreadyExistException ex) {
+			response = new ResponseEntity<>(ex.getClass().getName() + ":" + ex.getMessage(), HttpStatus.CONFLICT);
+		} catch (Exception ex) {
+			response = new ResponseEntity<>(ex.getClass().getName() + ":" + ex.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+		return response;
+	}
 
 	/*
 	 * Define a handler method which will update a specific user by reading the
@@ -49,6 +79,25 @@ public class UserController {
 	 * 
 	 * This handler method should map to the URL "/user/{id}" using HTTP PUT method.
 	 */
+	@PutMapping("/user/{id}")
+	public ResponseEntity<Object> updateUser(@RequestBody User user, HttpSession session) {
+		ResponseEntity<Object> response = null;
+		try {
+			if (session.getAttribute(SESSION_ATTR).equals(user.getUserId())) {
+				User updUser = this.userService.updateUser(user, user.getUserId());
+				if (null != updUser) {
+					response = new ResponseEntity<>(HttpStatus.OK);
+				} else {
+					response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+				}
+			} else {
+				response = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+		} catch (Exception ex) {
+			response = new ResponseEntity<>(ex.getClass().getName() + ":" + ex.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+		return response;
+	}
 
 	/*
 	 * Define a handler method which will delete a user from a database.
@@ -62,6 +111,22 @@ public class UserController {
 	 * This handler method should map to the URL "/user/{id}" using HTTP Delete
 	 * method" where "id" should be replaced by a valid userId without {}
 	 */
+	@DeleteMapping("/user/{id}")
+	public ResponseEntity<Object> deleteUser(@PathVariable String id, HttpSession session) {
+		ResponseEntity<Object> response = null;
+		try {
+			if (session.getAttribute(SESSION_ATTR).equals(id)) {
+				if (this.userService.deleteUser(id)) {
+					response = new ResponseEntity<>(HttpStatus.OK);
+				} else {
+					response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+				}
+			}
+		} catch (Exception e) {
+			response = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
+		return response;
+	}
 
 	/*
 	 * Define a handler method which will show details of a specific user handle
@@ -73,5 +138,24 @@ public class UserController {
 	 * using HTTP GET method where "id" should be replaced by a valid userId without
 	 * {}
 	 */
+	@GetMapping("/user/{id}")
+	public ResponseEntity<Object> getUserDetails(@PathVariable String id, HttpSession session) {
+		ResponseEntity<Object> response = null;
+		try {
+			if (session.getAttribute(SESSION_ATTR).equals(id)) {
+				User user = this.userService.getUserById(id);
+				if (null != user) {
+					response = new ResponseEntity<>(HttpStatus.OK);
+				} else {
+					response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+				}
+			} else {
+				response = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+		} catch (Exception ex) {
+			response = new ResponseEntity<>(ex.getClass().getName() + ":" + ex.getMessage(), HttpStatus.UNAUTHORIZED);
+		}
+		return response;
+	}
 
 }

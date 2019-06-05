@@ -1,5 +1,20 @@
 package com.stackroute.keepnote.controller;
 
+import java.util.List;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.stackroute.keepnote.model.Category;
 import com.stackroute.keepnote.service.CategoryService;
 
 /*
@@ -11,7 +26,10 @@ import com.stackroute.keepnote.service.CategoryService;
  * is equivalent to using @Controller and @ResposeBody annotation
  */
 
+@RestController
 public class CategoryController {
+
+	private static final String SESSION_ATTR = "loggedInUserId";
 
 	/*
 	 * Autowiring should be implemented for the CategoryService. (Use
@@ -19,8 +37,10 @@ public class CategoryController {
 	 * object using the new keyword
 	 */
 
-	public CategoryController(CategoryService categoryService) {
+	private final CategoryService categoryService;
 
+	public CategoryController(CategoryService categoryService) {
+		this.categoryService = categoryService;
 	}
 
 	/*
@@ -37,6 +57,20 @@ public class CategoryController {
 	 * This handler method should map to the URL "/category" using HTTP POST
 	 * method".
 	 */
+	@PostMapping("/category")
+	public ResponseEntity<String> createCategory(@RequestBody Category category, HttpSession session) {
+		ResponseEntity<String> response = null;
+		if (null != session && null != session.getAttribute(SESSION_ATTR)) {
+			if (this.categoryService.createCategory(category)) {
+				response = new ResponseEntity<>(HttpStatus.CREATED);
+			} else {
+				response = new ResponseEntity<>(HttpStatus.CONFLICT);
+			}
+		} else {
+			response = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
+		return response;
+	}
 
 	/*
 	 * Define a handler method which will delete a category from a database.
@@ -50,6 +84,20 @@ public class CategoryController {
 	 * This handler method should map to the URL "/category/{id}" using HTTP Delete
 	 * method" where "id" should be replaced by a valid categoryId without {}
 	 */
+	@DeleteMapping("/category/{id}")
+	public ResponseEntity<String> deleteCategory(@PathVariable int id, HttpSession session) {
+		ResponseEntity<String> response = null;
+		if (null != session && null != session.getAttribute(SESSION_ATTR)) {
+			if (this.categoryService.deleteCategory(id)) {
+				response = new ResponseEntity<>("DELETED", HttpStatus.OK);
+			} else {
+				response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+		} else {
+			response = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
+		return response;
+	}
 
 	/*
 	 * Define a handler method which will update a specific category by reading the
@@ -65,6 +113,25 @@ public class CategoryController {
 	 * This handler method should map to the URL "/category/{id}" using HTTP PUT
 	 * method.
 	 */
+	@PutMapping("/category/{id}")
+	public ResponseEntity<String> updateCategory(@RequestBody Category category, @PathVariable int id,
+			HttpSession session) {
+		try {
+			if (null == session.getAttribute(SESSION_ATTR)) {
+				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+			}
+			Category updCategory = this.categoryService.updateCategory(category, id);
+			if (null == updCategory) {
+				return new ResponseEntity<>(HttpStatus.OK);
+			} else {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
+		} catch (NullPointerException ex) {
+			return new ResponseEntity<>(ex.getClass().getName() + ":" + ex.getMessage(), HttpStatus.UNAUTHORIZED);
+		} catch (Exception ex) {
+			return new ResponseEntity<>(ex.getClass().getName() + ":" + ex.getMessage(), HttpStatus.NOT_FOUND);
+		}
+	}
 
 	/*
 	 * Define a handler method which will get us the category by a userId.
@@ -77,5 +144,17 @@ public class CategoryController {
 	 * 
 	 * This handler method should map to the URL "/category" using HTTP GET method
 	 */
+	@GetMapping("/category")
+	public ResponseEntity<Object> getCategory(HttpSession session){
+		ResponseEntity<Object> response = null;
+		if(null!=session && null!=session.getAttribute(SESSION_ATTR)) {
+			final String userId = session.getAttribute(SESSION_ATTR).toString();
+			List<Category> categories = this.categoryService.getAllCategoryByUserId(userId);
+			response = new ResponseEntity<>(categories, HttpStatus.OK);
+		}else {
+			response = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
+		return response;
+	}
 
 }

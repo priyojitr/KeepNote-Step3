@@ -2,6 +2,7 @@ package com.stackroute.keepnote.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.stackroute.keepnote.dao.CategoryDAO;
@@ -24,11 +25,12 @@ public class CategoryServiceImpl implements CategoryService {
 	 * autowiring) Please note that we should not create any object using the new
 	 * keyword.
 	 */
-	
+
 	private final CategoryDAO categoryDAO;
-	
+
+	@Autowired
 	public CategoryServiceImpl(CategoryDAO categoryDAO) {
-		this.categoryDAO=categoryDAO;
+		this.categoryDAO = categoryDAO;
 	}
 
 	/*
@@ -36,7 +38,7 @@ public class CategoryServiceImpl implements CategoryService {
 	 */
 	public boolean createCategory(Category category) {
 		boolean flag = Boolean.FALSE;
-		if(this.categoryDAO.createCategory(category)) {
+		if (this.categoryDAO.createCategory(category)) {
 			flag = Boolean.TRUE;
 		}
 		return flag;
@@ -46,7 +48,7 @@ public class CategoryServiceImpl implements CategoryService {
 	/* This method should be used to delete an existing category. */
 	public boolean deleteCategory(int categoryId) {
 		boolean flag = Boolean.FALSE;
-		if(this.categoryDAO.deleteCategory(categoryId)) {
+		if (this.categoryDAO.deleteCategory(categoryId)) {
 			flag = Boolean.TRUE;
 		}
 		return flag;
@@ -60,7 +62,7 @@ public class CategoryServiceImpl implements CategoryService {
 	public Category updateCategory(Category category, int id) throws CategoryNotFoundException {
 		this.categoryDAO.updateCategory(category);
 		Category updCategory = this.getCategoryById(id);
-		if(null==updCategory) {
+		if (null == updCategory) {
 			throw new CategoryNotFoundException("category does not exist with specified id");
 		}
 		return category;
@@ -72,7 +74,7 @@ public class CategoryServiceImpl implements CategoryService {
 	 */
 	public Category getCategoryById(int categoryId) throws CategoryNotFoundException {
 		Category category = this.categoryDAO.getCategoryById(categoryId);
-		if(null==category) {
+		if (null == category) {
 			throw new CategoryNotFoundException("category does not exist with specified id");
 		}
 		return category;
