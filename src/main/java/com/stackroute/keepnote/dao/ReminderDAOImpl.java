@@ -34,7 +34,7 @@ public class ReminderDAOImpl implements ReminderDAO {
 	private final SessionFactory sessionFactory;
 
 	@Autowired
-	public ReminderDAOImpl(SessionFactory sessionFactory) {
+	public ReminderDAOImpl(final SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 
@@ -42,8 +42,8 @@ public class ReminderDAOImpl implements ReminderDAO {
 	 * Create a new reminder
 	 */
 
-	public boolean createReminder(Reminder reminder) {
-		Session session = this.sessionFactory.getCurrentSession();
+	public boolean createReminder(final Reminder reminder) {
+		final Session session = this.sessionFactory.getCurrentSession();
 		session.save(reminder);
 		session.flush();
 		return false;
@@ -54,16 +54,16 @@ public class ReminderDAOImpl implements ReminderDAO {
 	 * Update an existing reminder
 	 */
 
-	public boolean updateReminder(Reminder reminder) {
+	public boolean updateReminder(final Reminder reminder) {
 		boolean flag = Boolean.TRUE;
-		Session session = this.sessionFactory.getCurrentSession();
+		final Session session = this.sessionFactory.getCurrentSession();
 		try {
 			// check whether reminder id exists or else exception will be thrown
 			this.getReminderById(reminder.getReminderId());
 			session.clear();
 			session.update(reminder);
 			session.flush();
-		} catch (ReminderNotFoundException ex) {
+		} catch (final ReminderNotFoundException ex) {
 			flag = Boolean.FALSE;
 			ex.printStackTrace();
 		}
@@ -74,13 +74,13 @@ public class ReminderDAOImpl implements ReminderDAO {
 	 * Remove an existing reminder
 	 */
 
-	public boolean deleteReminder(int reminderId) {
+	public boolean deleteReminder(final int reminderId) {
 		boolean flag = Boolean.TRUE;
-		Session session = this.sessionFactory.getCurrentSession();
+		final Session session = this.sessionFactory.getCurrentSession();
 		try {
 			session.delete(this.getReminderById(reminderId));
 			session.flush();
-		} catch (ReminderNotFoundException ex) {
+		} catch (final ReminderNotFoundException ex) {
 			flag = Boolean.FALSE;
 			System.out.println(ex.getMessage());
 			ex.printStackTrace();
@@ -92,9 +92,9 @@ public class ReminderDAOImpl implements ReminderDAO {
 	 * Retrieve details of a specific reminder
 	 */
 
-	public Reminder getReminderById(int reminderId) throws ReminderNotFoundException {
-		Session session = this.sessionFactory.getCurrentSession();
-		Reminder reminder = session.get(Reminder.class, reminderId);
+	public Reminder getReminderById(final int reminderId) throws ReminderNotFoundException {
+		final Session session = this.sessionFactory.getCurrentSession();
+		final Reminder reminder = session.get(Reminder.class, reminderId);
 		session.flush();
 		if (null == reminder) {
 			throw new ReminderNotFoundException("Reminder with specified id is not found");
@@ -106,10 +106,10 @@ public class ReminderDAOImpl implements ReminderDAO {
 	 * Retrieve details of all reminders by userId
 	 */
 
-	public List<Reminder> getAllReminderByUserId(String userId) {
-		Session session = this.sessionFactory.getCurrentSession();
-		String hql = "FROM Reminder reminder where reminderCreatedBy = :userId";
-		Query<Reminder> qry = session.createQuery(hql).setParameter("userId", userId);
+	public List<Reminder> getAllReminderByUserId(final String userId) {
+		final Session session = this.sessionFactory.getCurrentSession();
+		final String hql = "FROM Reminder reminder where reminderCreatedBy = :userId";
+		final Query<Reminder> qry = session.createQuery(hql).setParameter("userId", userId);
 		return qry.getResultList();
 	}
 

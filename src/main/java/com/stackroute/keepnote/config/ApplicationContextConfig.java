@@ -54,7 +54,7 @@ public class ApplicationContextConfig {
 	 */
 	@Bean
 	public DataSource dataSource() {
-		BasicDataSource ds = new BasicDataSource();
+		final BasicDataSource ds = new BasicDataSource();
 		ds.setDriverClassName("com.mysql.cj.jdbc.Driver");
 		ds.setUrl("jdbc:mysql://localhost:3306/keepnoteapp?verifyServerCertificate=false&useSSL=false&requireSSL=false");
 		ds.setUsername("root");
@@ -68,7 +68,7 @@ public class ApplicationContextConfig {
 	 */
 	@Bean
 	public Properties hibernateProperties() {
-		Properties hbProp = new Properties();
+		final Properties hbProp = new Properties();
 		hbProp.put("hibernate.show_sql", "true");
 		hbProp.put("hibernate.hbm2ddl.auto", "update");
 		hbProp.put("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
@@ -80,8 +80,8 @@ public class ApplicationContextConfig {
 	 * class through which we get sessions and perform database operations.
 	 */
 	@Bean
-	public LocalSessionFactoryBean sessionFactory(DataSource dataSource, Properties hibernateProperties) {
-		LocalSessionFactoryBean bean = new LocalSessionFactoryBean();
+	public LocalSessionFactoryBean sessionFactory(final DataSource dataSource, final Properties hibernateProperties) {
+		final LocalSessionFactoryBean bean = new LocalSessionFactoryBean();
 		bean.setDataSource(dataSource);
 		bean.setHibernateProperties(hibernateProperties);
 		bean.setAnnotatedClasses(Category.class, Note.class, Reminder.class, User.class);
@@ -97,7 +97,7 @@ public class ApplicationContextConfig {
 	 * ensures data integrity.
 	 */
 	@Bean
-	public HibernateTransactionManager transactionManager(SessionFactory sessionFactory) {
+	public HibernateTransactionManager transactionManager(final SessionFactory sessionFactory) {
 		return new HibernateTransactionManager(sessionFactory);
 	}
 

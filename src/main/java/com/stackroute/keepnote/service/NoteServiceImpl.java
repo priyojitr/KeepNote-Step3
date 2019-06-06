@@ -38,7 +38,7 @@ public class NoteServiceImpl implements NoteService {
 	private final ReminderDAO reminderDAO;
 
 	@Autowired
-	public NoteServiceImpl(NoteDAO noteDAO, CategoryDAO categoryDAO, ReminderDAO reminderDAO) {
+	public NoteServiceImpl(final NoteDAO noteDAO, final CategoryDAO categoryDAO, final ReminderDAO reminderDAO) {
 		this.noteDAO = noteDAO;
 		this.categoryDAO = categoryDAO;
 		this.reminderDAO = reminderDAO;
@@ -48,10 +48,11 @@ public class NoteServiceImpl implements NoteService {
 	 * This method should be used to save a new note.
 	 */
 
-	public boolean createNote(Note note) throws ReminderNotFoundException, CategoryNotFoundException {
-		Reminder reminder = note.getReminder();
-		Category category = note.getCategory();
+	public boolean createNote(final Note note) throws ReminderNotFoundException, CategoryNotFoundException {
+		final Reminder reminder = note.getReminder();
+		final Category category = note.getCategory();
 		boolean flag = Boolean.FALSE;
+		
 		try {
 			if (null != reminder) {
 				reminderDAO.getReminderById(reminder.getReminderId());
@@ -61,8 +62,12 @@ public class NoteServiceImpl implements NoteService {
 			}
 			flag = noteDAO.createNote(note);
 		} catch (ReminderNotFoundException | CategoryNotFoundException ex) {
-			System.out.println(ex.getClass().getName() + ":" + ex.getMessage());
-			ex.printStackTrace();
+			if(ex instanceof ReminderNotFoundException) {
+				throw new ReminderNotFoundException("reminder not found exception");
+			}
+			if(ex instanceof CategoryNotFoundException) {
+				throw new CategoryNotFoundException("category not found exception");
+			}
 		}
 		return flag;
 
@@ -70,7 +75,7 @@ public class NoteServiceImpl implements NoteService {
 
 	/* This method should be used to delete an existing note. */
 
-	public boolean deleteNote(int noteId) {
+	public boolean deleteNote(final int noteId) {
 		return noteDAO.deleteNote(noteId);
 
 	}
@@ -78,7 +83,7 @@ public class NoteServiceImpl implements NoteService {
 	 * This method should be used to get a note by userId.
 	 */
 
-	public List<Note> getAllNotesByUserId(String userId) {
+	public List<Note> getAllNotesByUserId(final String userId) {
 		return noteDAO.getAllNotesByUserId(userId);
 
 	}
@@ -86,8 +91,8 @@ public class NoteServiceImpl implements NoteService {
 	/*
 	 * This method should be used to get a note by noteId.
 	 */
-	public Note getNoteById(int noteId) throws NoteNotFoundException {
-		Note note = noteDAO.getNoteById(noteId);
+	public Note getNoteById(final int noteId) throws NoteNotFoundException {
+		final Note note = noteDAO.getNoteById(noteId);
 		if (null == note) {
 			throw new NoteNotFoundException("note not found exception");
 		}
@@ -99,29 +104,32 @@ public class NoteServiceImpl implements NoteService {
 	 * This method should be used to update a existing note.
 	 */
 
-	public Note updateNote(Note note, int id)
+	public Note updateNote(final Note note, final int id)
 			throws ReminderNotFoundException, NoteNotFoundException, CategoryNotFoundException {
 		// get existing note
-		Note oldNote = noteDAO.getNoteById(id);
-		Reminder reminder = note.getReminder();
-		Category category = note.getCategory();
-		try {
-			if (null == oldNote) {
-				// it should stop further processing if note (or id) is invalid
-				throw new NoteNotFoundException("note not found exception");
-			} else {
-				// verify whether reminder id & category id present
-				this.reminderDAO.getReminderById(reminder.getReminderId());
-				this.categoryDAO.getCategoryById(category.getCategoryId());
-				this.noteDAO.UpdateNote(note);
+		final Note oldNote = noteDAO.getNoteById(id);
+		final Reminder reminder = note.getReminder();
+		final Category category = note.getCategory();
+		if (null == oldNote) {
+			throw new NoteNotFoundException("note not found exception");
+		} else {
+			if (null != reminder && reminder.getReminderId() > 0) {
+				try {
+					this.reminderDAO.getReminderById(reminder.getReminderId());
+				} catch (final Exception e) {
+					throw new ReminderNotFoundException("reminder not found exception");
+				}
 			}
-
-		} catch (ReminderNotFoundException | CategoryNotFoundException ex) {
-			System.out.println(ex.getClass().getName() + ":" + ex.getMessage());
-			ex.printStackTrace();
+			if (null != category && category.getCategoryId() > 0) {
+				try {
+					this.categoryDAO.getCategoryById(category.getCategoryId());
+				} catch (final Exception e) {
+					throw new CategoryNotFoundException("category not found exception");
+				}
+			}
+			this.noteDAO.UpdateNote(note);
 		}
 		return note;
-
 	}
 
 }

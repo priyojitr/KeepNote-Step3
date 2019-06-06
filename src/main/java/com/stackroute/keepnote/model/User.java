@@ -34,7 +34,7 @@ public class User {
 
 	}
 
-	public User(String userId, String userName, String userPassword, String userMobile, Date userAddedDate) {
+	public User(final String userId, final String userName, final String userPassword, final String userMobile, final Date userAddedDate) {
 		this.userId = userId;
 		this.userName = userName;
 		this.userPassword = userPassword;
@@ -46,11 +46,11 @@ public class User {
 		return this.userId;
 	}
 
-	public void setUserId(String userId) {
+	public void setUserId(final String userId) {
 		this.userId = userId;
 	}
 
-	public void setUserName(String userName) {
+	public void setUserName(final String userName) {
 		this.userName = userName;
 	}
 
@@ -59,7 +59,7 @@ public class User {
 
 	}
 
-	public void setUserPassword(String userPassword) {
+	public void setUserPassword(final String userPassword) {
 		this.userPassword = userPassword;
 	}
 
@@ -68,7 +68,7 @@ public class User {
 
 	}
 
-	public void setUserMobile(String userMobile) {
+	public void setUserMobile(final String userMobile) {
 		this.userMobile = userMobile;
 	}
 
@@ -80,7 +80,7 @@ public class User {
 		return userAddedDate;
 	}
 
-	public void setUserAddedDate(Date userAddedDate) {
+	public void setUserAddedDate(final Date userAddedDate) {
 		this.userAddedDate = userAddedDate;
 	}
 	

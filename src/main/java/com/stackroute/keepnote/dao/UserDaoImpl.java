@@ -33,7 +33,7 @@ public class UserDaoImpl implements UserDAO {
 	private final SessionFactory sessionFactory;
 
 	@Autowired
-	public UserDaoImpl(SessionFactory sessionFactory) {
+	public UserDaoImpl(final SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 
@@ -41,35 +41,36 @@ public class UserDaoImpl implements UserDAO {
 	 * Create a new user
 	 */
 
-	public boolean registerUser(User user) {
+	public boolean registerUser(final User user) {
+		boolean flag = Boolean.FALSE;
 		try {
-		if (null == this.getUserById(user.getUserId())) {
-			return Boolean.FALSE;
-		}else {
-			if(user.getUserId().equals(this.getUserById(user.getUserId()).getUserId())) {
-				// duplicate user
-				throw new UserAlreadyExistException("user id already exists.");
+			if (null == this.getUserById(user.getUserId())) {
+				final Session session = this.sessionFactory.getCurrentSession();
+				session.save(user);
+				session.flush();
+				flag = Boolean.TRUE;
+			} else {
+				if (user.getUserId().equals(this.getUserById(user.getUserId()).getUserId())) {
+					// duplicate user
+					throw new UserAlreadyExistException("user id already exists.");
+				}
 			}
-		}
-		Session session = this.sessionFactory.getCurrentSession();
-		session.save(user);
-		session.flush();
-		}catch(Exception ex) {
+		} catch (final Exception ex) {
+			System.out.println(ex.getClass().getName() + ":" + ex.getMessage());
 			ex.printStackTrace();
-			System.out.println(ex.getMessage());
 		}
-		return Boolean.TRUE;
+		return flag;
 	}
 
 	/*
 	 * Update an existing user
 	 */
 
-	public boolean updateUser(User user) {
+	public boolean updateUser(final User user) {
 		if (null == this.getUserById(user.getUserId())) {
 			return Boolean.FALSE;
 		}
-		Session session = this.sessionFactory.getCurrentSession();
+		final Session session = this.sessionFactory.getCurrentSession();
 		session.clear();
 		session.update(user);
 		session.flush();
@@ -80,9 +81,9 @@ public class UserDaoImpl implements UserDAO {
 	/*
 	 * Retrieve details of a specific user
 	 */
-	public User getUserById(String UserId) {
-		Session session = this.sessionFactory.getCurrentSession();
-		User user = session.get(User.class, UserId);
+	public User getUserById(final String UserId) {
+		final Session session = this.sessionFactory.getCurrentSession();
+		final User user = session.get(User.class, UserId);
 		session.flush();
 		return user;
 	}
@@ -91,8 +92,8 @@ public class UserDaoImpl implements UserDAO {
 	 * validate an user
 	 */
 
-	public boolean validateUser(String userId, String password) throws UserNotFoundException {
-		User user = this.getUserById(userId);
+	public boolean validateUser(final String userId, final String password) throws UserNotFoundException {
+		final User user = this.getUserById(userId);
 		if (null == user) {
 			throw new UserNotFoundException("User id provided do not exists.");
 		} else {
@@ -107,13 +108,13 @@ public class UserDaoImpl implements UserDAO {
 	/*
 	 * Remove an existing user
 	 */
-	public boolean deleteUser(String userId) {
-		User user = this.getUserById(userId);
+	public boolean deleteUser(final String userId) {
+		final User user = this.getUserById(userId);
 		if (null == user) {
 			return Boolean.FALSE;
 		}
-	
-		Session session = this.sessionFactory.getCurrentSession();
+
+		final Session session = this.sessionFactory.getCurrentSession();
 		session.delete(user);
 		session.flush();
 

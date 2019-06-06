@@ -58,8 +58,8 @@ public class Note {
 
 	}
 
-	public Note(int noteId, String noteTitle, String noteContent, String noteStatus, Date createdAt, Category category,
-			Reminder reminder, String createdBy) {
+	public Note(final int noteId, final String noteTitle, final String noteContent, final String noteStatus, final Date createdAt, final Category category,
+			final Reminder reminder, final String createdBy) {
 		this.noteId = noteId;
 		this.noteTitle = noteTitle;
 		this.noteContent = noteContent;
@@ -94,7 +94,7 @@ public class Note {
 		return createdBy;
 	}
 
-	public void setNoteId(int noteId) {
+	public void setNoteId(final int noteId) {
 		this.noteId = noteId;
 	}
 
@@ -102,7 +102,7 @@ public class Note {
 		return this.noteTitle;
 	}
 
-	public void setNoteTitle(String noteTitle) {
+	public void setNoteTitle(final String noteTitle) {
 		this.noteTitle = noteTitle;
 	}
 
@@ -110,27 +110,27 @@ public class Note {
 		return this.noteContent;
 	}
 
-	public void setNoteContent(String noteContent) {
+	public void setNoteContent(final String noteContent) {
 		this.noteContent = noteContent;
 	}
 
-	public void setNoteStatus(String noteStatus) {
+	public void setNoteStatus(final String noteStatus) {
 		this.noteStatus = noteStatus;
 	}
 
-	public void setNoteCreatedAt(Date createdAt) {
+	public void setNoteCreatedAt(final Date createdAt) {
 		this.createdAt = createdAt;
 	}
 
-	public void setCreatedBy(String createdBy) {
+	public void setCreatedBy(final String createdBy) {
 		this.createdBy = createdBy;
 	}
 
-	public void setReminder(Reminder reminder) {
+	public void setReminder(final Reminder reminder) {
 		this.reminder = reminder;
 	}
 
-	public void setCategory(Category category) {
+	public void setCategory(final Category category) {
 		this.category = category;
 	}
 

@@ -47,8 +47,8 @@ public class Category {
 
 	}
 
-	public Category(int categoryId, String categoryName, String categoryDescription, Date categoryCreationDate,
-			String categoryCreatedBy, List<Note> notes) {
+	public Category(final int categoryId, final String categoryName, final String categoryDescription, final Date categoryCreationDate,
+			final String categoryCreatedBy, final List<Note> notes) {
 		this.categoryId = categoryId;
 		this.categoryName = categoryName;
 		this.categoryDescription = categoryDescription;
@@ -58,7 +58,7 @@ public class Category {
 
 	}
 
-	public void setCategoryId(int categoryId) {
+	public void setCategoryId(final int categoryId) {
 		this.categoryId = categoryId;
 	}
 
@@ -82,7 +82,7 @@ public class Category {
 		return notes;
 	}
 
-	public void setCategoryName(String categoryName) {
+	public void setCategoryName(final String categoryName) {
 		this.categoryName = categoryName;
 	}
 
@@ -90,19 +90,19 @@ public class Category {
 		return this.categoryDescription;
 	}
 
-	public void setCategoryDescription(String categoryDescription) {
+	public void setCategoryDescription(final String categoryDescription) {
 		this.categoryDescription = categoryDescription;
 	}
 
-	public void setCategoryCreationDate(Date categoryCreationDate) {
+	public void setCategoryCreationDate(final Date categoryCreationDate) {
 		this.categoryCreationDate = categoryCreationDate;
 	}
 
-	public void setCategoryCreatedBy(String categoryCreatedBy) {
+	public void setCategoryCreatedBy(final String categoryCreatedBy) {
 		this.categoryCreatedBy = categoryCreatedBy;
 	}
 
-	public void setNotes(List<Note> notes) {
+	public void setNotes(final List<Note> notes) {
 		this.notes = notes;
 	}
 

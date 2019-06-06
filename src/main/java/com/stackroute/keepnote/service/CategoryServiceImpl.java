@@ -29,14 +29,14 @@ public class CategoryServiceImpl implements CategoryService {
 	private final CategoryDAO categoryDAO;
 
 	@Autowired
-	public CategoryServiceImpl(CategoryDAO categoryDAO) {
+	public CategoryServiceImpl(final CategoryDAO categoryDAO) {
 		this.categoryDAO = categoryDAO;
 	}
 
 	/*
 	 * This method should be used to save a new category.
 	 */
-	public boolean createCategory(Category category) {
+	public boolean createCategory(final Category category) {
 		boolean flag = Boolean.FALSE;
 		if (this.categoryDAO.createCategory(category)) {
 			flag = Boolean.TRUE;
@@ -46,7 +46,7 @@ public class CategoryServiceImpl implements CategoryService {
 	}
 
 	/* This method should be used to delete an existing category. */
-	public boolean deleteCategory(int categoryId) {
+	public boolean deleteCategory(final int categoryId) {
 		boolean flag = Boolean.FALSE;
 		if (this.categoryDAO.deleteCategory(categoryId)) {
 			flag = Boolean.TRUE;
@@ -59,9 +59,9 @@ public class CategoryServiceImpl implements CategoryService {
 	 * This method should be used to update a existing category.
 	 */
 
-	public Category updateCategory(Category category, int id) throws CategoryNotFoundException {
+	public Category updateCategory(final Category category, final int id) throws CategoryNotFoundException {
 		this.categoryDAO.updateCategory(category);
-		Category updCategory = this.getCategoryById(id);
+		final Category updCategory = this.getCategoryById(id);
 		if (null == updCategory) {
 			throw new CategoryNotFoundException("category does not exist with specified id");
 		}
@@ -72,8 +72,8 @@ public class CategoryServiceImpl implements CategoryService {
 	/*
 	 * This method should be used to get a category by categoryId.
 	 */
-	public Category getCategoryById(int categoryId) throws CategoryNotFoundException {
-		Category category = this.categoryDAO.getCategoryById(categoryId);
+	public Category getCategoryById(final int categoryId) throws CategoryNotFoundException {
+		final Category category = this.categoryDAO.getCategoryById(categoryId);
 		if (null == category) {
 			throw new CategoryNotFoundException("category does not exist with specified id");
 		}
@@ -85,7 +85,7 @@ public class CategoryServiceImpl implements CategoryService {
 	 * This method should be used to get a category by userId.
 	 */
 
-	public List<Category> getAllCategoryByUserId(String userId) {
+	public List<Category> getAllCategoryByUserId(final String userId) {
 		return this.categoryDAO.getAllCategoryByUserId(userId);
 	}
 

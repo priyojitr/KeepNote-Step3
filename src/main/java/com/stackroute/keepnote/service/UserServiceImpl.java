@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
 	private final UserDAO userDAO;
 
 	@Autowired
-	public UserServiceImpl(UserDAO userDAO) {
+	public UserServiceImpl(final UserDAO userDAO) {
 		this.userDAO = userDAO;
 	}
 
@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
 	 * This method should be used to save a new user.
 	 */
 
-	public boolean registerUser(User user) throws UserAlreadyExistException {
+	public boolean registerUser(final User user) throws UserAlreadyExistException {
 		if(this.userDAO.registerUser(user)) {
 			return Boolean.TRUE;
 		}else {
@@ -50,9 +50,9 @@ public class UserServiceImpl implements UserService {
 	 * This method should be used to update a existing user.
 	 */
 
-	public User updateUser(User user, String userId) throws Exception {
+	public User updateUser(final User user, final String userId) throws Exception {
 		this.userDAO.updateUser(user);
-		User updatedUser = this.getUserById(userId);
+		final User updatedUser = this.getUserById(userId);
 		if(null==updatedUser) {
 			throw new Exception("exception updating user");
 		}
@@ -64,8 +64,8 @@ public class UserServiceImpl implements UserService {
 	 * This method should be used to get a user by userId.
 	 */
 
-	public User getUserById(String UserId) throws UserNotFoundException {
-		User user=this.userDAO.getUserById(UserId);
+	public User getUserById(final String UserId) throws UserNotFoundException {
+		final User user=this.userDAO.getUserById(UserId);
 		if(null==user) {
 			throw new UserNotFoundException("user not found excpetion");
 		}
@@ -78,8 +78,8 @@ public class UserServiceImpl implements UserService {
 	 * This method should be used to validate a user using userId and password.
 	 */
 
-	public boolean validateUser(String userId, String password) throws UserNotFoundException {
-		boolean flag = Boolean.TRUE;
+	public boolean validateUser(final String userId, final String password) throws UserNotFoundException {
+		final boolean flag = Boolean.TRUE;
 		if(!this.userDAO.validateUser(userId, password)) {
 			throw new UserNotFoundException("user validation exception");
 		}
@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	/* This method should be used to delete an existing user. */
-	public boolean deleteUser(String UserId) {
+	public boolean deleteUser(final String UserId) {
 		return this.userDAO.deleteUser(UserId);
 
 	}

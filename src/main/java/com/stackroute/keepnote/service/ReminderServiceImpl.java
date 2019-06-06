@@ -31,7 +31,7 @@ public class ReminderServiceImpl implements ReminderService {
 	private final ReminderDAO reminderDAO;
 
 	@Autowired
-	public ReminderServiceImpl(ReminderDAO reminderDAO) {
+	public ReminderServiceImpl(final ReminderDAO reminderDAO) {
 		this.reminderDAO = reminderDAO;
 	}
 
@@ -39,7 +39,7 @@ public class ReminderServiceImpl implements ReminderService {
 	 * This method should be used to save a new reminder.
 	 */
 
-	public boolean createReminder(Reminder reminder) {
+	public boolean createReminder(final Reminder reminder) {
 		return this.reminderDAO.createReminder(reminder);
 
 	}
@@ -48,8 +48,8 @@ public class ReminderServiceImpl implements ReminderService {
 	 * This method should be used to update a existing reminder.
 	 */
 
-	public Reminder updateReminder(Reminder reminder, int id) throws ReminderNotFoundException {
-		Reminder oldReminder = this.reminderDAO.getReminderById(id);
+	public Reminder updateReminder(final Reminder reminder, final int id) throws ReminderNotFoundException {
+		final Reminder oldReminder = this.reminderDAO.getReminderById(id);
 		if (null == oldReminder) {
 			throw new ReminderNotFoundException("reminder not found exception");
 		}
@@ -60,7 +60,7 @@ public class ReminderServiceImpl implements ReminderService {
 
 	/* This method should be used to delete an existing reminder. */
 
-	public boolean deleteReminder(int reminderId) {
+	public boolean deleteReminder(final int reminderId) {
 		return this.reminderDAO.deleteReminder(reminderId);
 	}
 
@@ -68,8 +68,8 @@ public class ReminderServiceImpl implements ReminderService {
 	 * This method should be used to get a reminder by reminderId.
 	 */
 
-	public Reminder getReminderById(int reminderId) throws ReminderNotFoundException {
-		Reminder reminder = this.reminderDAO.getReminderById(reminderId);
+	public Reminder getReminderById(final int reminderId) throws ReminderNotFoundException {
+		final Reminder reminder = this.reminderDAO.getReminderById(reminderId);
 		if(null==reminder) {
 			throw new ReminderNotFoundException("reminder not found exception");
 		}
@@ -81,7 +81,7 @@ public class ReminderServiceImpl implements ReminderService {
 	 * This method should be used to get a reminder by userId.
 	 */
 
-	public List<Reminder> getAllReminderByUserId(String userId) {
+	public List<Reminder> getAllReminderByUserId(final String userId) {
 		return this.reminderDAO.getAllReminderByUserId(userId);
 
 	}

@@ -39,7 +39,7 @@ public class CategoryController {
 
 	private final CategoryService categoryService;
 
-	public CategoryController(CategoryService categoryService) {
+	public CategoryController(final CategoryService categoryService) {
 		this.categoryService = categoryService;
 	}
 
@@ -58,7 +58,7 @@ public class CategoryController {
 	 * method".
 	 */
 	@PostMapping("/category")
-	public ResponseEntity<String> createCategory(@RequestBody Category category, HttpSession session) {
+	public ResponseEntity<String> createCategory(@RequestBody final Category category, final HttpSession session) {
 		ResponseEntity<String> response = null;
 		if (null != session && null != session.getAttribute(SESSION_ATTR)) {
 			if (this.categoryService.createCategory(category)) {
@@ -85,7 +85,7 @@ public class CategoryController {
 	 * method" where "id" should be replaced by a valid categoryId without {}
 	 */
 	@DeleteMapping("/category/{id}")
-	public ResponseEntity<String> deleteCategory(@PathVariable int id, HttpSession session) {
+	public ResponseEntity<String> deleteCategory(@PathVariable final int id, final HttpSession session) {
 		ResponseEntity<String> response = null;
 		if (null != session && null != session.getAttribute(SESSION_ATTR)) {
 			if (this.categoryService.deleteCategory(id)) {
@@ -114,21 +114,21 @@ public class CategoryController {
 	 * method.
 	 */
 	@PutMapping("/category/{id}")
-	public ResponseEntity<String> updateCategory(@RequestBody Category category, @PathVariable int id,
-			HttpSession session) {
+	public ResponseEntity<String> updateCategory(@RequestBody final Category category, @PathVariable final int id,
+			final HttpSession session) {
 		try {
 			if (null == session.getAttribute(SESSION_ATTR)) {
 				return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}
-			Category updCategory = this.categoryService.updateCategory(category, id);
+			final Category updCategory = this.categoryService.updateCategory(category, id);
 			if (null == updCategory) {
-				return new ResponseEntity<>(HttpStatus.OK);
-			} else {
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			} else {
+				return new ResponseEntity<>(HttpStatus.OK);
 			}
-		} catch (NullPointerException ex) {
+		} catch (final NullPointerException ex) {
 			return new ResponseEntity<>(ex.getClass().getName() + ":" + ex.getMessage(), HttpStatus.UNAUTHORIZED);
-		} catch (Exception ex) {
+		} catch (final Exception ex) {
 			return new ResponseEntity<>(ex.getClass().getName() + ":" + ex.getMessage(), HttpStatus.NOT_FOUND);
 		}
 	}
@@ -145,11 +145,11 @@ public class CategoryController {
 	 * This handler method should map to the URL "/category" using HTTP GET method
 	 */
 	@GetMapping("/category")
-	public ResponseEntity<Object> getCategory(HttpSession session){
+	public ResponseEntity<Object> getCategory(final HttpSession session){
 		ResponseEntity<Object> response = null;
 		if(null!=session && null!=session.getAttribute(SESSION_ATTR)) {
 			final String userId = session.getAttribute(SESSION_ATTR).toString();
-			List<Category> categories = this.categoryService.getAllCategoryByUserId(userId);
+			final List<Category> categories = this.categoryService.getAllCategoryByUserId(userId);
 			response = new ResponseEntity<>(categories, HttpStatus.OK);
 		}else {
 			response = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

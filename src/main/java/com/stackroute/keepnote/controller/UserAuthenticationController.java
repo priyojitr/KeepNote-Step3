@@ -34,7 +34,7 @@ public class UserAuthenticationController {
 	private final UserService userService;
 
 	@Autowired
-	public UserAuthenticationController(UserService userService) {
+	public UserAuthenticationController(final UserService userService) {
 		this.userService = userService;
 	}
 
@@ -51,7 +51,7 @@ public class UserAuthenticationController {
 	 * This handler method should map to the URL "/login" using HTTP POST method
 	 */
 	@PostMapping("/login")
-	public ResponseEntity<Object> userLogin(@RequestBody User user, HttpSession session) {
+	public ResponseEntity<Object> userLogin(@RequestBody final User user, final HttpSession session) {
 		ResponseEntity<Object> response = null;
 		try {
 			if (this.userService.validateUser(user.getUserId(), user.getUserPassword())) {
@@ -60,7 +60,7 @@ public class UserAuthenticationController {
 			} else {
 				response = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}
-		} catch (Exception ex) {
+		} catch (final Exception ex) {
 			response = new ResponseEntity<>(ex.getClass().getName() + ":" + ex.getMessage(), HttpStatus.UNAUTHORIZED);
 		}
 		return response;
@@ -75,7 +75,7 @@ public class UserAuthenticationController {
 	 * This handler method should map to the URL "/logout" using HTTP GET method
 	 */
 	@GetMapping("/logout")
-	public ResponseEntity<Object> logout(HttpSession session) {
+	public ResponseEntity<Object> logout(final HttpSession session) {
 		ResponseEntity<Object> response = null;
 		if (null != session && null != session.getAttribute("loggedInUserId")) {
 			session.invalidate();

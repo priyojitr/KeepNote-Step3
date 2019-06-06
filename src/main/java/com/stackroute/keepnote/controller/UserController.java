@@ -2,6 +2,7 @@ package com.stackroute.keepnote.controller;
 
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,8 +35,9 @@ public class UserController {
 	 * keyword
 	 */
 
-	private final UserService userService;
-
+	private UserService userService;
+	
+	@Autowired
 	public UserController(UserService userService) {
 		this.userService = userService;
 	}
@@ -59,7 +61,9 @@ public class UserController {
 	public ResponseEntity<Object> userRegister(@RequestBody User user) {
 		ResponseEntity<Object> response = null;
 		try {
-			this.userService.registerUser(user);
+			if(this.userService.registerUser(user)) {
+				response = new ResponseEntity<>(HttpStatus.CREATED);
+			}
 		} catch (UserAlreadyExistException ex) {
 			response = new ResponseEntity<>(ex.getClass().getName() + ":" + ex.getMessage(), HttpStatus.CONFLICT);
 		} catch (Exception ex) {
@@ -94,7 +98,7 @@ public class UserController {
 				response = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}
 		} catch (Exception ex) {
-			response = new ResponseEntity<>(ex.getClass().getName() + ":" + ex.getMessage(), HttpStatus.BAD_REQUEST);
+			response = new ResponseEntity<>(ex.getClass().getName() + ":" + ex.getMessage(), HttpStatus.UNAUTHORIZED);
 		}
 		return response;
 	}

@@ -35,7 +35,7 @@ public class NoteDAOImpl implements NoteDAO {
 	private final SessionFactory sessionFactory;
 
 	@Autowired
-	public NoteDAOImpl(SessionFactory sessionFactory) {
+	public NoteDAOImpl(final SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 
@@ -43,8 +43,8 @@ public class NoteDAOImpl implements NoteDAO {
 	 * Create a new note
 	 */
 
-	public boolean createNote(Note note) {
-		Session session=this.sessionFactory.getCurrentSession();
+	public boolean createNote(final Note note) {
+		final Session session=this.sessionFactory.getCurrentSession();
 		session.save(note);
 		session.flush();
 		return Boolean.TRUE;
@@ -55,13 +55,13 @@ public class NoteDAOImpl implements NoteDAO {
 	 * Remove an existing note
 	 */
 
-	public boolean deleteNote(int noteId) {
-		Session session=this.sessionFactory.getCurrentSession();
+	public boolean deleteNote(final int noteId) {
+		final Session session=this.sessionFactory.getCurrentSession();
 		boolean flag = Boolean.TRUE;
 		try {
 			session.delete(this.getNoteById(noteId));
 			session.flush();
-		}catch (Exception ex) {
+		}catch (final Exception ex) {
 			flag=Boolean.FALSE;
 			System.out.println(ex.getMessage());
 			ex.printStackTrace();
@@ -73,10 +73,10 @@ public class NoteDAOImpl implements NoteDAO {
 	 * Retrieve details of all notes by userId
 	 */
 
-	public List<Note> getAllNotesByUserId(String userId) {
-		Session session = this.sessionFactory.getCurrentSession();
-		String hql = "FROM Note note where createdBy =  :userId";
-		Query<Note> qry = session.createQuery(hql).setParameter("userId", userId);
+	public List<Note> getAllNotesByUserId(final String userId) {
+		final Session session = this.sessionFactory.getCurrentSession();
+		final String hql = "FROM Note note where createdBy =  :userId";
+		final Query<Note> qry = session.createQuery(hql).setParameter("userId", userId);
 		return qry.getResultList();
 
 	}
@@ -85,9 +85,9 @@ public class NoteDAOImpl implements NoteDAO {
 	 * Retrieve details of a specific note
 	 */
 
-	public Note getNoteById(int noteId) throws NoteNotFoundException {
-		Session session = this.sessionFactory.getCurrentSession();
-		Note note = session.get(Note.class, noteId);
+	public Note getNoteById(final int noteId) throws NoteNotFoundException {
+		final Session session = this.sessionFactory.getCurrentSession();
+		final Note note = session.get(Note.class, noteId);
 		if(null==note) {
 			throw new NoteNotFoundException("Note does not exist with specified id.");
 		}
@@ -100,15 +100,15 @@ public class NoteDAOImpl implements NoteDAO {
 	 * Update an existing note
 	 */
 
-	public boolean UpdateNote(Note note) {
-		Session session = this.sessionFactory.getCurrentSession();
+	public boolean UpdateNote(final Note note) {
+		final Session session = this.sessionFactory.getCurrentSession();
 		boolean flag = Boolean.TRUE;
 		try {
 			this.getNoteById(note.getNoteId());
 			session.clear();
 			session.update(note);
 			session.flush();
-		} catch (Exception ex) {
+		} catch (final Exception ex) {
 			flag=Boolean.FALSE;
 			System.out.println(ex.getMessage());
 			ex.printStackTrace();

@@ -42,7 +42,7 @@ public class ReminderController {
 	 * 
 	 */
 
-	private static final String SESSION_ATTR = "";
+	private static final String SESSION_ATTR = "loggedInUserId";
 
 	private final ReminderService reminderService;
 
@@ -52,7 +52,7 @@ public class ReminderController {
 	 * object using the new keyword
 	 */
 	@Autowired
-	public ReminderController(ReminderService reminderService) {
+	public ReminderController(final ReminderService reminderService) {
 		this.reminderService = reminderService;
 	}
 
@@ -71,11 +71,11 @@ public class ReminderController {
 	 * method".
 	 */
 	@PostMapping("/reminder")
-	public ResponseEntity<Object> createReminder(@RequestBody Reminder reminder, HttpSession session) {
+	public ResponseEntity<Object> createReminder(@RequestBody final Reminder reminder, final HttpSession session) {
 		ResponseEntity<Object> response = null;
 		if (null != session && null != session.getAttribute(SESSION_ATTR)) {
 			if (this.reminderService.createReminder(reminder)) {
-				response = new ResponseEntity<>(HttpStatus.OK);
+				response = new ResponseEntity<>(HttpStatus.CREATED);
 			} else {
 				response = new ResponseEntity<>(HttpStatus.CONFLICT);
 			}
@@ -98,7 +98,7 @@ public class ReminderController {
 	 * method" where "id" should be replaced by a valid reminderId without {}
 	 */
 	@DeleteMapping("/reminder/{id}")
-	public ResponseEntity<Object> deleteReminder(@PathVariable int id, HttpSession session) {
+	public ResponseEntity<Object> deleteReminder(@PathVariable final int id, final HttpSession session) {
 		ResponseEntity<Object> response = null;
 		if (null != session && null != session.getAttribute(SESSION_ATTR)) {
 			if (this.reminderService.deleteReminder(id)) {
@@ -127,13 +127,13 @@ public class ReminderController {
 	 * method.
 	 */
 	@PutMapping("/reminder/{id}")
-	public ResponseEntity<Object> updateReminder(@RequestBody Reminder reminder, @PathVariable int id,
-			HttpSession session) {
+	public ResponseEntity<Object> updateReminder(@RequestBody final Reminder reminder, @PathVariable final int id,
+			final HttpSession session) {
 		ResponseEntity<Object> response = null;
 		try {
 			if (null != session.getAttribute(SESSION_ATTR)
 					&& session.getAttribute(SESSION_ATTR).equals(reminder.getReminderCreatedBy())) {
-				Reminder updReminder = this.reminderService.updateReminder(reminder, id);
+				final Reminder updReminder = this.reminderService.updateReminder(reminder, id);
 				if (null != updReminder) {
 					response = new ResponseEntity<>(updReminder, HttpStatus.OK);
 				} else {
@@ -142,9 +142,9 @@ public class ReminderController {
 			} else {
 				response = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}
-		} catch (ReminderNotFoundException ex) {
+		} catch (final ReminderNotFoundException ex) {
 			response = new ResponseEntity<>(ex.getClass().getName() + ":" + ex.getMessage(), HttpStatus.NOT_FOUND);
-		} catch (Exception ex) {
+		} catch (final Exception ex) {
 			response = new ResponseEntity<>(ex.getClass().getName() + ":" + ex.getMessage(), HttpStatus.UNAUTHORIZED);
 		}
 		return response;
@@ -162,7 +162,7 @@ public class ReminderController {
 	 * This handler method should map to the URL "/reminder" using HTTP GET method
 	 */
 	@GetMapping("/reminder")
-	public ResponseEntity<Object> getAllReminders(HttpSession session) {
+	public ResponseEntity<Object> getAllReminders(final HttpSession session) {
 		ResponseEntity<Object> response = null;
 		if (session != null && null != session.getAttribute(SESSION_ATTR)) {
 			final String userId = session.getAttribute(SESSION_ATTR).toString();
@@ -184,20 +184,22 @@ public class ReminderController {
 	 * valid reminderId without {}
 	 */
 	@GetMapping("/reminder/{id}")
-	public ResponseEntity<Object> getReminder(@PathVariable int id, HttpSession session) {
+	public ResponseEntity<Object> getReminder(@PathVariable final int id, final HttpSession session) {
 		ResponseEntity<Object> response = null;
 		try {
 			if (null != session.getAttribute(SESSION_ATTR)) {
-				Reminder reminder = this.reminderService.getReminderById(id);
+				final Reminder reminder = this.reminderService.getReminderById(id);
 				if (null != reminder) {
 					response = new ResponseEntity<>(reminder, HttpStatus.OK);
 				} else {
 					response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
 				}
+			} else {
+				response = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 			}
-		} catch (ReminderNotFoundException ex) {
+		} catch (final ReminderNotFoundException ex) {
 			response = new ResponseEntity<>(ex.getClass().getName() + ":" + ex.getMessage(), HttpStatus.NOT_FOUND);
-		} catch (Exception ex) {
+		} catch (final Exception ex) {
 			response = new ResponseEntity<>(ex.getClass().getName() + ":" + ex.getMessage(), HttpStatus.UNAUTHORIZED);
 		}
 		return response;

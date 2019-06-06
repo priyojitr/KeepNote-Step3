@@ -48,8 +48,8 @@ public class Reminder {
 
 	}
 
-	public Reminder(int reminderId, String reminderName, String reminderDescription, String reminderType,
-			String reminderCreatedBy, List<Note> notes, Date reminderCreationDate) {
+	public Reminder(final int reminderId, final String reminderName, final String reminderDescription, final String reminderType,
+			final String reminderCreatedBy, final List<Note> notes, final Date reminderCreationDate) {
 		this.reminderId = reminderId;
 		this.reminderName = reminderName;
 		this.reminderDescription = reminderDescription;
@@ -84,11 +84,11 @@ public class Reminder {
 
 	}
 
-	public void setReminderId(int reminderId) {
+	public void setReminderId(final int reminderId) {
 		this.reminderId = reminderId;
 	}
 
-	public void setReminderName(String reminderName) {
+	public void setReminderName(final String reminderName) {
 		this.reminderName = reminderName;
 	}
 
@@ -96,23 +96,23 @@ public class Reminder {
 		return this.reminderDescription;
 	}
 
-	public void setReminderDescription(String reminderDescription) {
+	public void setReminderDescription(final String reminderDescription) {
 		this.reminderDescription = reminderDescription;
 	}
 
-	public void setReminderType(String reminderType) {
+	public void setReminderType(final String reminderType) {
 		this.reminderType = reminderType;
 	}
 
-	public void setReminderCreationDate(Date reminderCreationDate) {
+	public void setReminderCreationDate(final Date reminderCreationDate) {
 		this.reminderCreationDate = reminderCreationDate;
 	}
 
-	public void setReminderCreatedBy(String reminderCreatedBy) {
+	public void setReminderCreatedBy(final String reminderCreatedBy) {
 		this.reminderCreatedBy = reminderCreatedBy;
 	}
 
-	public void setNotes(List<Note> notes) {
+	public void setNotes(final List<Note> notes) {
 		this.notes = notes;
 	}
 	
