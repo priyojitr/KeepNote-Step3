@@ -56,9 +56,15 @@ public class ApplicationContextConfig {
 	public DataSource dataSource() {
 		final BasicDataSource ds = new BasicDataSource();
 		ds.setDriverClassName("com.mysql.cj.jdbc.Driver");
-		ds.setUrl("jdbc:mysql://localhost:3306/keepnoteapp?verifyServerCertificate=false&useSSL=false&requireSSL=false");
-		ds.setUsername("root");
-		ds.setPassword("root");
+		// HOBESS CONFIG FOR DATASOURCE
+		ds.setUrl("jdbc:mysql://" + System.getenv("MYSQL_HOST") + ":3306/" + System.getenv("MYSQL_DATABASE")
+				+ "?verifyServerCertificate=false&useSSL=false&requireSSL=false");
+		ds.setUsername(System.getenv("MYSQL_USER"));
+		ds.setPassword(System.getenv("MYSQL_PASSWORD"));
+		// LOCAL CONFIG
+		// ds.setUrl("jdbc:mysql://localhost:3306/keepnoteapp?verifyServerCertificate=false&useSSL=false&requireSSL=false")
+		// ds.setUsername("root")
+		// ds.setPassword("root")
 		return ds;
 	}
 
